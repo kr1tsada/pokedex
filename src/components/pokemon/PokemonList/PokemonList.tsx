@@ -9,6 +9,7 @@ import { useFilter, useView } from '@/contexts';
 import { fetchPokemonById } from '@/api/pokemon.api';
 import { ITEMS_PER_PAGE, MAX_POKEMON } from '@/utils/constants';
 import type { Pokemon } from '@/api/types/pokemon.types';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 /**
  * PokemonList Component
@@ -117,19 +118,7 @@ export const PokemonList: FC = () => {
     return (
       <div className="text-center py-12">
         <div className="text-red-600 mb-4">
-          <svg
-            className="w-16 h-16 mx-auto mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <ExclamationCircleOutlined size={24} />
           <p className="text-lg font-semibold">Failed to load Pokemon</p>
           <p className="text-sm text-gray-600 mt-2">{error.message}</p>
         </div>

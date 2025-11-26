@@ -1,8 +1,8 @@
 import { type FC } from 'react';
 import { Button } from '@/components/common';
-import { GridIcon, ListIcon } from '@/components/icons';
 import { useView } from '@/contexts';
 import { cn } from '@/utils/style';
+import { AppstoreOutlined, UnorderedListOutlined } from '@ant-design/icons';
 
 /**
  * PokemonViewToggle Component
@@ -22,7 +22,7 @@ export const PokemonViewToggle: FC = () => {
         className={cn(
           viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
         )}
-        icon={<GridIcon />}
+        icon={<AppstoreOutlined />}
       >
         <span className="hidden sm:inline">Grid</span>
       </Button>
@@ -35,7 +35,7 @@ export const PokemonViewToggle: FC = () => {
         className={cn(
           viewMode === 'list' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
         )}
-        icon={<ListIcon />}
+        icon={<UnorderedListOutlined />}
       >
         <span className="hidden sm:inline">List</span>
       </Button>

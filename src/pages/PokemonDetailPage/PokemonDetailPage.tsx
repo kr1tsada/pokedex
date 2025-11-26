@@ -3,12 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { usePokemonDetail } from '@/hooks';
 import { Container } from '@/components/layout';
 import { Loading, Button } from '@/components/common';
-import { ArrowLeftIcon } from '@/components/icons';
 import { PokemonDetailHeader } from '@/components/pokemon/PokemonDetailHeader';
 import { PokemonInfo } from '@/components/pokemon/PokemonInfo';
 import { PokemonStats } from '@/components/pokemon/PokemonStats';
 import { PokemonAbilities } from '@/components/pokemon/PokemonAbilities';
 import { EvolutionChain } from '@/components/pokemon/EvolutionChain';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 
 /**
  * PokemonDetailPage Component
@@ -63,7 +63,7 @@ export const PokemonDetailPage: FC = () => {
           onClick={() => navigate('/')}
           variant="default"
           className="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
-          icon={<ArrowLeftIcon />}
+          icon={<ArrowLeftOutlined />}
         >
           <span className="hidden sm:inline">Back to Home</span>
         </Button>
