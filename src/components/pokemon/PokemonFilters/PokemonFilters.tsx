@@ -5,6 +5,7 @@ import { useFilter } from '@/contexts';
 import { usePokemonTypes } from '@/hooks';
 import { formatPokemonName } from '@/utils/formatters';
 import type { SortOption } from '@/utils/types';
+import { SearchOutlined } from '@ant-design/icons';
 
 /**
  * PokemonFilters Component
@@ -48,80 +49,72 @@ export const PokemonFilters: FC = () => {
 
   return (
     <div className="space-y-4">
-      {/* Search Input */}
-      <div>
-        <Input
-          value={state.searchQuery}
-          onChange={setSearchQuery}
-          placeholder="Search Pokemon by name..."
-          type="text"
-          showClear
-          icon={
-            <svg
-              className="w-5 h-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          }
-        />
-      </div>
+      {/* Row 1: 3 Columns Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Column 1: Search Input */}
+        <div>
+          <label className="text-sm font-medium text-gray-700 mb-2 block">Search Pokemon:</label>
+          <Input
+            value={state.searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Search by name..."
+            type="text"
+            size="large"
+            showClear
+            icon={<SearchOutlined />}
+          />
+        </div>
 
-      {/* Type Filters */}
-      <div>
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
-          Filter by Type:
-          {state.selectedTypes.length > 0 && (
-            <span className="text-xs text-gray-500 ml-2">
-              {state.selectedTypes.length} selected
-            </span>
-          )}
-        </label>
+        {/* Column 2: Type Filter */}
+        <div>
+          <label className="text-sm font-medium text-gray-700 mb-2 block">
+            Filter by Type:
+            {state.selectedTypes.length > 0 && (
+              <span className="text-xs text-gray-500 ml-2">
+                {state.selectedTypes.length} selected
+              </span>
+            )}
+          </label>
+          <Select
+            mode="multiple"
+            size="large"
+            value={state.selectedTypes}
+            onChange={handleTypeChange}
+            options={typeOptions}
+            placeholder="Select types..."
+            className="w-full"
+            loading={isTypesLoading}
+            showSearch
+            allowClear
+          />
+        </div>
 
-        <Select
-          mode="multiple"
-          value={state.selectedTypes}
-          onChange={handleTypeChange}
-          options={typeOptions}
-          placeholder="Select Pokemon types..."
-          className="w-full"
-          loading={isTypesLoading}
-          showSearch
-          allowClear
-        />
-      </div>
-
-      {/* Sort Dropdown & Clear Button */}
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-        {/* Sort Dropdown */}
-        <div className="flex-1 w-full sm:w-auto">
-          <label htmlFor="sort-select" className="text-sm font-medium text-gray-700 mb-1 block">
+        {/* Column 3: Sort Dropdown */}
+        <div>
+          <label htmlFor="sort-select" className="text-sm font-medium text-gray-700 mb-2 block">
             Sort by:
           </label>
           <Select
             allowClear
+            size="large"
             id="sort-select"
             value={state.sortBy}
             onClear={() => handleSortChange('id-asc')}
             onChange={handleSortChange}
             options={sortOptions}
+            className="w-full"
           />
         </div>
-
-        {/* Clear Filters Button */}
-        {hasActiveFilters && (
-          <Button onClick={clearFilters} variant="default" className="mt-6 sm:mt-0">
-            Clear Filters
-          </Button>
-        )}
       </div>
+
+      {/* Row 2: Clear Filters Button */}
+      {hasActiveFilters && (
+        <div className="flex justify-center">
+          <Button onClick={clearFilters} variant="default">
+            Clear All Filters
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
