@@ -1,5 +1,6 @@
 import { type FC } from 'react';
 import { Button } from '@/components/common';
+import { GridIcon, ListIcon } from '@/components/icons';
 import { useView } from '@/contexts';
 import { cn } from '@/utils/style';
 
@@ -19,25 +20,12 @@ export const PokemonViewToggle: FC = () => {
         variant={viewMode === 'grid' ? 'primary' : 'white'}
         aria-label="Grid view"
         className={cn(
-          'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+          'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
           viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
         )}
+        icon={<GridIcon />}
       >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-          />
-        </svg>
-        <span className="ml-2 hidden sm:inline">Grid</span>
+        <span className="hidden sm:inline">Grid</span>
       </Button>
 
       {/* List View Button */}
@@ -46,25 +34,12 @@ export const PokemonViewToggle: FC = () => {
         variant={viewMode === 'list' ? 'primary' : 'white'}
         aria-label="List view"
         className={cn(
-          'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+          'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
           viewMode === 'list' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
         )}
+        icon={<ListIcon />}
       >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        </svg>
-        <span className="ml-2 hidden sm:inline">List</span>
+        <span className="hidden sm:inline">List</span>
       </Button>
     </div>
   );

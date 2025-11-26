@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { usePokemonDetail } from '@/hooks';
 import { Container } from '@/components/layout';
 import { Loading, Button } from '@/components/common';
+import { ArrowLeftIcon } from '@/components/icons';
 import { PokemonDetailHeader } from '@/components/pokemon/PokemonDetailHeader';
 import { PokemonInfo } from '@/components/pokemon/PokemonInfo';
 import { PokemonStats } from '@/components/pokemon/PokemonStats';
@@ -61,23 +62,10 @@ export const PokemonDetailPage: FC = () => {
         <Button
           onClick={() => navigate('/')}
           variant="outline"
-          className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+          className="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
+          icon={<ArrowLeftIcon />}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          <span className="ml-2 hidden sm:inline">Back to Home</span>
+          <span className="hidden sm:inline">Back to Home</span>
         </Button>
       </div>
 
