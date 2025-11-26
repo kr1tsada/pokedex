@@ -29,6 +29,9 @@ export const Home: FC = () => {
 
         {/* View Toggle (Grid/List) */}
         <div className="flex-shrink-0">
+          <label htmlFor="sort-select" className="text-sm font-medium text-gray-700 mb-2 block">
+            View:
+          </label>
           <PokemonViewToggle />
         </div>
       </div>

@@ -81,6 +81,8 @@ export const PokemonFilters: FC = () => {
             value={state.selectedTypes}
             onChange={handleTypeChange}
             options={typeOptions}
+            popupMatchSelectWidth={true}
+            maxTagCount={1}
             placeholder="Select types..."
             className="w-full"
             loading={isTypesLoading}
@@ -109,8 +111,8 @@ export const PokemonFilters: FC = () => {
 
       {/* Row 2: Clear Filters Button */}
       {hasActiveFilters && (
-        <div className="flex justify-center">
-          <Button onClick={clearFilters} variant="default">
+        <div className="flex justify-start">
+          <Button variant="primary" onClick={clearFilters}>
             Clear All Filters
           </Button>
         </div>
