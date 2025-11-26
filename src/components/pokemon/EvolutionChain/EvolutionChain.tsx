@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEvolutionChain, type EvolutionStage } from '@/hooks';
 import { Loading } from '@/components/common';
 import { formatPokemonName } from '@/utils/formatters';
+import { RightOutlined } from '@ant-design/icons';
 
 interface EvolutionChainProps {
   speciesUrl: string; // จาก pokemon.species.url
@@ -95,35 +96,25 @@ export const EvolutionChain: FC<EvolutionChainProps> = ({ speciesUrl }) => {
                 />
               </div>
 
-              {/* Pokemon name */}
-              <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors capitalize">
-                {formatPokemonName(stage.name)}
-              </span>
+              {/* Text block pinned to a fixed height so cards stay even when level is missing */}
+              <div className="flex flex-col items-center gap-1 min-h-[44px]">
+                <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors capitalize">
+                  {formatPokemonName(stage.name)}
+                </span>
 
-              {/* Evolution requirement (level/trigger) */}
-              {stage.minLevel && (
-                <span className="text-xs text-gray-500">Lv. {stage.minLevel}</span>
-              )}
+                <span
+                  className={`text-xs text-gray-500 ${stage.minLevel ? '' : 'invisible'}`}
+                  aria-hidden={!stage.minLevel}
+                >
+                  Lv. {stage.minLevel ?? '0'}
+                </span>
+              </div>
             </div>
 
             {/* Arrow (ไม่แสดงหลัง Pokemon ตัวสุดท้าย) */}
             {index < primaryPath.length - 1 && (
               <div className="flex items-center text-gray-400">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
+                <RightOutlined />
               </div>
             )}
           </div>
