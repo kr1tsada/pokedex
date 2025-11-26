@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchEvolutionChain, fetchPokemonSpecies } from '@/api/pokemon.api';
 import type { EvolutionChain, ChainLink } from '@/api/types/pokemon.types';
+import { QUERY_GC_TIMES, QUERY_STALE_TIMES } from '@/lib/queryTimes';
 
 /**
  * Simplified evolution stage
@@ -81,8 +82,8 @@ export const useEvolutionChain = (speciesUrl?: string) => {
       return await fetchPokemonSpecies(speciesId);
     },
     enabled: !!speciesId,
-    staleTime: Infinity, // Species data ไม่เปลี่ยน
-    gcTime: 1000 * 60 * 60, // 1 hour
+    staleTime: QUERY_STALE_TIMES.infinite, // Species data ไม่เปลี่ยน
+    gcTime: QUERY_GC_TIMES.long, // 1 hour
   });
 
   // Extract evolution chain ID จาก species.evolution_chain.url
@@ -101,8 +102,8 @@ export const useEvolutionChain = (speciesUrl?: string) => {
       const data: EvolutionChain = await fetchEvolutionChain(evolutionChainId);
       return parseEvolutionChain(data.chain);
     },
-    staleTime: Infinity, // Evolution chain ไม่เปลี่ยน
-    gcTime: 1000 * 60 * 60, // 1 hour
+    staleTime: QUERY_STALE_TIMES.infinite, // Evolution chain ไม่เปลี่ยน
+    gcTime: QUERY_GC_TIMES.long, // 1 hour
     enabled: !!evolutionChainId, // รอให้มี evolutionChainId จาก speciesQuery ก่อน
   });
 

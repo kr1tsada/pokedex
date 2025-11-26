@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchPokemonById, fetchPokemonByName } from '@/api/pokemon.api';
 import type { Pokemon } from '@/api/types/pokemon.types';
+import { QUERY_GC_TIMES, QUERY_STALE_TIMES } from '@/lib/queryTimes';
 
 /**
  * Custom hook สำหรับดึงข้อมูล Pokemon แต่ละตัว
@@ -25,8 +26,8 @@ export const usePokemonDetail = (idOrName: string | number) => {
         return fetchPokemonByName(name);
       }
     },
-    staleTime: 1000 * 60 * 10, // 10 minutes
-    gcTime: 1000 * 60 * 60, // 1 hour
+    staleTime: QUERY_STALE_TIMES.extended, // 10 minutes
+    gcTime: QUERY_GC_TIMES.long, // 1 hour
     retry: (failureCount, error) => {
       // ไม่ retry ถ้าเป็น 404 Not Found
       if (error && typeof error === 'object' && 'response' in error) {

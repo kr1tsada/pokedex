@@ -10,6 +10,7 @@ import { fetchPokemonById } from '@/api/pokemon.api';
 import { ITEMS_PER_PAGE, MAX_POKEMON } from '@/utils/constants';
 import type { Pokemon } from '@/api/types/pokemon.types';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { QUERY_GC_TIMES, QUERY_STALE_TIMES } from '@/lib/queryTimes';
 
 /**
  * PokemonList Component
@@ -50,8 +51,8 @@ export const PokemonList: FC = () => {
     queries: pokemonIds.map((id) => ({
       queryKey: ['pokemon', id],
       queryFn: () => fetchPokemonById(id),
-      staleTime: 1000 * 60 * 10, // 10 minutes
-      gcTime: 1000 * 60 * 60, // 1 hour
+      staleTime: QUERY_STALE_TIMES.extended, // 10 minutes
+      gcTime: QUERY_GC_TIMES.long, // 1 hour
       enabled: !!id, // Only fetch ถ้ามี ID
     })),
   });
