@@ -1,0 +1,1 @@
+export { PokemonAbilities } from './PokemonAbilities';

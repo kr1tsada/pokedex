@@ -1,0 +1,1 @@
+export { PokemonViewToggle } from './PokemonViewToggle';
