@@ -1,4 +1,4 @@
-import { type FC } from 'react';
+import { type FC, useMemo } from 'react';
 import { Select } from 'antd';
 import { Input, Button } from '@/components/common';
 import { useFilter } from '@/contexts';
@@ -10,13 +10,27 @@ import type { SortOption } from '@/utils/types';
  * PokemonFilters Component
  * ประกอบด้วย:
  * - Search input (ค้นหาชื่อ Pokemon)
- * - Type filter chips (เลือก type แบบ multi-select)
+ * - Type filter dropdown (เลือก type แบบ multi-select)
  * - Sort dropdown (เรียงตาม ID หรือ Name)
  * - Clear filters button
  */
 export const PokemonFilters: FC = () => {
-  const { state, setSearchQuery, toggleType, setSortBy, clearFilters } = useFilter();
+  const { state, setSearchQuery, setSelectedTypes, setSortBy, clearFilters } = useFilter();
   const { data: typesData, isLoading: isTypesLoading } = usePokemonTypes();
+
+  // Transform API data เป็น Select options format
+  const typeOptions = useMemo(
+    () =>
+      typesData?.results.map((type) => ({
+        label: formatPokemonName(type.name),
+        value: type.name,
+      })) || [],
+    [typesData]
+  );
+
+  const handleTypeChange = (selectedValues: string[]) => {
+    setSelectedTypes(selectedValues);
+  };
 
   const handleSortChange = (value: string) => {
     setSortBy(value as SortOption);
@@ -62,33 +76,26 @@ export const PokemonFilters: FC = () => {
 
       {/* Type Filters */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-sm font-medium text-gray-700">Filter by Type:</label>
+        <label className="text-sm font-medium text-gray-700 mb-2 block">
+          Filter by Type:
           {state.selectedTypes.length > 0 && (
-            <span className="text-xs text-gray-500">{state.selectedTypes.length} selected</span>
+            <span className="text-xs text-gray-500 ml-2">
+              {state.selectedTypes.length} selected
+            </span>
           )}
-        </div>
+        </label>
 
-        {isTypesLoading ? (
-          <div className="text-sm text-gray-500">Loading types...</div>
-        ) : (
-          <div className="flex flex-wrap gap-2">
-            {typesData?.results.map((type: { name: string; url: string }) => {
-              const isSelected = state.selectedTypes.includes(type.name);
-
-              return (
-                <Button
-                  key={type.name}
-                  onClick={() => toggleType(type.name)}
-                  variant={isSelected ? 'primary' : 'dashed'}
-                  className="text-xs capitalize"
-                >
-                  {formatPokemonName(type.name)}
-                </Button>
-              );
-            })}
-          </div>
-        )}
+        <Select
+          mode="multiple"
+          value={state.selectedTypes}
+          onChange={handleTypeChange}
+          options={typeOptions}
+          placeholder="Select Pokemon types..."
+          className="w-full"
+          loading={isTypesLoading}
+          showSearch
+          allowClear
+        />
       </div>
 
       {/* Sort Dropdown & Clear Button */}
@@ -99,12 +106,12 @@ export const PokemonFilters: FC = () => {
             Sort by:
           </label>
           <Select
+            allowClear
             id="sort-select"
             value={state.sortBy}
+            onClear={() => handleSortChange('id-asc')}
             onChange={handleSortChange}
             options={sortOptions}
-            className="w-full"
-            style={{ width: '100%' }}
           />
         </div>
 

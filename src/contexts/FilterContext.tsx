@@ -9,6 +9,7 @@ import type { FilterState, SortOption } from '@/utils/types';
 type FilterAction =
   | { type: 'SET_SEARCH_QUERY'; payload: string }
   | { type: 'TOGGLE_TYPE'; payload: string }
+  | { type: 'SET_SELECTED_TYPES'; payload: string[] }
   | { type: 'SET_SORT_BY'; payload: SortOption }
   | { type: 'CLEAR_FILTERS' };
 
@@ -42,6 +43,12 @@ const filterReducer = (state: FilterState, action: FilterAction): FilterState =>
       };
     }
 
+    case 'SET_SELECTED_TYPES':
+      return {
+        ...state,
+        selectedTypes: action.payload,
+      };
+
     case 'SET_SORT_BY':
       return {
         ...state,
@@ -64,6 +71,7 @@ interface FilterContextValue {
   dispatch: Dispatch<FilterAction>;
   setSearchQuery: (query: string) => void;
   toggleType: (type: string) => void;
+  setSelectedTypes: (types: string[]) => void;
   setSortBy: (sortOption: SortOption) => void;
   clearFilters: () => void;
 }
@@ -96,6 +104,10 @@ export const FilterProvider = ({ children }: FilterProviderProps) => {
     dispatch({ type: 'TOGGLE_TYPE', payload: type });
   }, []);
 
+  const setSelectedTypes = useCallback((types: string[]) => {
+    dispatch({ type: 'SET_SELECTED_TYPES', payload: types });
+  }, []);
+
   const setSortBy = useCallback((sortOption: SortOption) => {
     dispatch({ type: 'SET_SORT_BY', payload: sortOption });
   }, []);
@@ -109,6 +121,7 @@ export const FilterProvider = ({ children }: FilterProviderProps) => {
     dispatch,
     setSearchQuery,
     toggleType,
+    setSelectedTypes,
     setSortBy,
     clearFilters,
   };
