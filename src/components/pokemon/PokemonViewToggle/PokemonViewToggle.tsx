@@ -13,14 +13,13 @@ export const PokemonViewToggle: FC = () => {
   const { viewMode, setViewMode } = useView();
 
   return (
-    <div className={'flex items-center gap-1 rounded-lg border border-slate-200 bg-white p-1'}>
+    <div className={'flex items-center gap-1 rounded-lg border border-slate-200 bg-white'}>
       {/* Grid View Button */}
       <Button
         onClick={() => setViewMode('grid')}
         variant={viewMode === 'grid' ? 'primary' : 'text'}
         aria-label="Grid view"
         className={cn(
-          'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
           viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
         )}
         icon={<GridIcon />}
@@ -34,7 +33,6 @@ export const PokemonViewToggle: FC = () => {
         variant={viewMode === 'list' ? 'primary' : 'text'}
         aria-label="List view"
         className={cn(
-          'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
           viewMode === 'list' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'
         )}
         icon={<ListIcon />}
