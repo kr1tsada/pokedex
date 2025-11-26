@@ -17,7 +17,7 @@ export const PokemonViewToggle: FC = () => {
       {/* Grid View Button */}
       <Button
         onClick={() => setViewMode('grid')}
-        variant={viewMode === 'grid' ? 'primary' : 'white'}
+        variant={viewMode === 'grid' ? 'primary' : 'text'}
         aria-label="Grid view"
         className={cn(
           'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
@@ -31,7 +31,7 @@ export const PokemonViewToggle: FC = () => {
       {/* List View Button */}
       <Button
         onClick={() => setViewMode('list')}
-        variant={viewMode === 'list' ? 'primary' : 'white'}
+        variant={viewMode === 'list' ? 'primary' : 'text'}
         aria-label="List view"
         className={cn(
           'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',

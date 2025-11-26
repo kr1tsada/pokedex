@@ -1,4 +1,5 @@
 import { type FC } from 'react';
+import { Select } from 'antd';
 import { Input, Button } from '@/components/common';
 import { useFilter } from '@/contexts';
 import { usePokemonTypes } from '@/hooks';
@@ -17,9 +18,16 @@ export const PokemonFilters: FC = () => {
   const { state, setSearchQuery, toggleType, setSortBy, clearFilters } = useFilter();
   const { data: typesData, isLoading: isTypesLoading } = usePokemonTypes();
 
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortBy(e.target.value as SortOption);
+  const handleSortChange = (value: string) => {
+    setSortBy(value as SortOption);
   };
+
+  const sortOptions = [
+    { label: 'ID (Ascending)', value: 'id-asc' },
+    { label: 'ID (Descending)', value: 'id-desc' },
+    { label: 'Name (A-Z)', value: 'name-asc' },
+    { label: 'Name (Z-A)', value: 'name-desc' },
+  ];
 
   const hasActiveFilters =
     state.searchQuery.length > 0 || state.selectedTypes.length > 0 || state.sortBy !== 'id-asc';
@@ -72,7 +80,7 @@ export const PokemonFilters: FC = () => {
                 <Button
                   key={type.name}
                   onClick={() => toggleType(type.name)}
-                  variant={isSelected ? 'primary' : 'outline'}
+                  variant={isSelected ? 'primary' : 'dashed'}
                   className="text-xs capitalize"
                 >
                   {formatPokemonName(type.name)}
@@ -90,22 +98,19 @@ export const PokemonFilters: FC = () => {
           <label htmlFor="sort-select" className="text-sm font-medium text-gray-700 mb-1 block">
             Sort by:
           </label>
-          <select
+          <Select
             id="sort-select"
             value={state.sortBy}
             onChange={handleSortChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-sm"
-          >
-            <option value="id-asc">ID (Ascending)</option>
-            <option value="id-desc">ID (Descending)</option>
-            <option value="name-asc">Name (A-Z)</option>
-            <option value="name-desc">Name (Z-A)</option>
-          </select>
+            options={sortOptions}
+            className="w-full"
+            style={{ width: '100%' }}
+          />
         </div>
 
         {/* Clear Filters Button */}
         {hasActiveFilters && (
-          <Button onClick={clearFilters} variant="secondary" className="mt-6 sm:mt-0">
+          <Button onClick={clearFilters} variant="default" className="mt-6 sm:mt-0">
             Clear Filters
           </Button>
         )}

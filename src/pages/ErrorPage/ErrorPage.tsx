@@ -57,7 +57,7 @@ export const ErrorPage = () => {
         )}
 
         <div className="flex gap-3 justify-center">
-          <Button onClick={handleRetry} variant="secondary">
+          <Button onClick={handleRetry} variant="default">
             ลองอีกครั้ง
           </Button>
           <Button onClick={handleGoHome} variant="primary">

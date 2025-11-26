@@ -1,4 +1,5 @@
 import { type FC } from 'react';
+import { Empty } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useEvolutionChain, type EvolutionStage } from '@/hooks';
 import { Loading } from '@/components/common';
@@ -21,7 +22,7 @@ export const EvolutionChain: FC<EvolutionChainProps> = ({ speciesUrl }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <Loading size="sm" />
+        <Loading size="small" />
       </div>
     );
   }
@@ -30,7 +31,7 @@ export const EvolutionChain: FC<EvolutionChainProps> = ({ speciesUrl }) => {
   if (error || !evolutionPaths || evolutionPaths.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-sm text-gray-500">Unable to load evolution chain</p>
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Unable to load evolution chain" />
       </div>
     );
   }

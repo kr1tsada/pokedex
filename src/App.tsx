@@ -1,11 +1,14 @@
+import { ConfigProvider } from 'antd';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from 'react-router-dom';
 import { queryClient } from '@/lib/queryClient';
 import { router } from './router';
 import { FilterProvider, ViewProvider } from '@/contexts';
+import { antdTheme } from '@/lib/antdTheme';
 
 /**
  * Main App component with providers
+ * - ConfigProvider: Ant Design theme configuration
  * - QueryClientProvider: TanStack Query for server state
  * - FilterProvider: Client state for search/filter/sort
  * - ViewProvider: Client state for grid/list view mode
@@ -16,13 +19,15 @@ import { FilterProvider, ViewProvider } from '@/contexts';
  */
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <FilterProvider>
-        <ViewProvider>
-          <RouterProvider router={router} />
-        </ViewProvider>
-      </FilterProvider>
-    </QueryClientProvider>
+    <ConfigProvider theme={antdTheme}>
+      <QueryClientProvider client={queryClient}>
+        <FilterProvider>
+          <ViewProvider>
+            <RouterProvider router={router} />
+          </ViewProvider>
+        </FilterProvider>
+      </QueryClientProvider>
+    </ConfigProvider>
   );
 }
 

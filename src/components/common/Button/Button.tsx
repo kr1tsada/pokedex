@@ -1,9 +1,10 @@
-import { type FC, type ButtonHTMLAttributes, type ReactNode } from 'react';
-import clsx from 'clsx';
+import { type FC, type ReactNode } from 'react';
+import { Button as AntButton } from 'antd';
+import type { ButtonProps as AntButtonProps } from 'antd';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'white';
+export type ButtonVariant = 'primary' | 'default' | 'dashed' | 'text';
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends Omit<AntButtonProps, 'type' | 'variant' | 'iconPosition'> {
   variant?: ButtonVariant;
   children: React.ReactNode;
   icon?: ReactNode;
@@ -11,46 +12,38 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 /**
- * Button component สำหรับ UI actions
- * รองรับ variants: primary (สีหลัก), secondary (สีรอง), outline (ขอบ)
+ * Button component (Ant Design wrapper)
+ * รองรับ variants: primary, default, dashed, text
+ * Custom prop: iconPosition สำหรับวาง icon ซ้าย/ขวา (map เป็น start/end)
  */
 export const Button: FC<ButtonProps> = ({
   variant = 'primary',
   children,
-  className,
-  disabled,
   icon,
   iconPosition = 'left',
+  className,
   ...props
 }) => {
-  const baseStyles =
-    'inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed';
-
-  const variantStyles = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 active:bg-blue-800',
-    secondary: 'bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500 active:bg-gray-800',
-    outline:
-      'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 focus:ring-blue-500 active:bg-blue-100',
-    white: 'bg-white text-black hover:bg-gray-100 focus:ring-gray-500 active:bg-gray-200',
+  // Map custom variants to Ant Design types
+  const typeMap: Record<ButtonVariant, AntButtonProps['type']> = {
+    primary: 'primary',
+    default: 'default',
+    dashed: 'dashed',
+    text: 'text',
   };
 
-  const iconElement =
-    icon &&
-    (iconPosition === 'left' ? (
-      <span className="mr-2 flex-shrink-0">{icon}</span>
-    ) : (
-      <span className="ml-2 flex-shrink-0">{icon}</span>
-    ));
+  // Map custom icon position values to Ant Design values
+  const mappedIconPosition: 'start' | 'end' = iconPosition === 'right' ? 'end' : 'start';
 
   return (
-    <button
-      className={clsx(baseStyles, variantStyles[variant], className)}
-      disabled={disabled}
+    <AntButton
+      type={typeMap[variant]}
+      icon={icon}
+      iconPosition={mappedIconPosition}
+      className={className}
       {...props}
     >
-      {iconPosition === 'left' && iconElement}
-      <span className="inline-flex items-center">{children}</span>
-      {iconPosition === 'right' && iconElement}
-    </button>
+      {children}
+    </AntButton>
   );
 };

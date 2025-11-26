@@ -1,4 +1,5 @@
 import { type FC, useState, useEffect } from 'react';
+import { Progress } from 'antd';
 import type { PokemonStat } from '@/api/types/pokemon.types';
 import { formatStatName } from '@/utils/formatters';
 
@@ -9,7 +10,7 @@ interface PokemonStatsProps {
 /**
  * PokemonStats Component
  * แสดง stat bars สำหรับ 6 Pokemon stats (HP, Attack, Defense, Sp.Atk, Sp.Def, Speed)
- * พร้อม progress bars แบบ horizontal และ total base stats
+ * พร้อม Ant Design Progress bars และ total base stats
  * Bars animate from 0% to actual value on mount
  */
 export const PokemonStats: FC<PokemonStatsProps> = ({ stats }) => {
@@ -28,16 +29,16 @@ export const PokemonStats: FC<PokemonStatsProps> = ({ stats }) => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Map stat name ไปหาสีที่เหมาะสม
+  // Map stat name ไปหาสี hex สำหรับ strokeColor
   const getStatColor = (statName: string): string => {
     const name = statName.toLowerCase();
-    if (name.includes('hp')) return 'bg-red-500';
-    if (name.includes('attack') && !name.includes('special')) return 'bg-orange-500';
-    if (name.includes('defense') && !name.includes('special')) return 'bg-yellow-500';
-    if (name.includes('special-attack')) return 'bg-blue-500';
-    if (name.includes('special-defense')) return 'bg-green-500';
-    if (name.includes('speed')) return 'bg-pink-500';
-    return 'bg-gray-500'; // fallback
+    if (name.includes('hp')) return '#ef4444'; // red-500
+    if (name.includes('attack') && !name.includes('special')) return '#f97316'; // orange-500
+    if (name.includes('defense') && !name.includes('special')) return '#eab308'; // yellow-500
+    if (name.includes('special-attack')) return '#3b82f6'; // blue-500
+    if (name.includes('special-defense')) return '#22c55e'; // green-500
+    if (name.includes('speed')) return '#ec4899'; // pink-500
+    return '#6b7280'; // gray-500 fallback
   };
 
   return (
@@ -66,18 +67,15 @@ export const PokemonStats: FC<PokemonStatsProps> = ({ stats }) => {
                 <span className="font-semibold text-gray-800">{stat.base_stat}</span>
               </div>
 
-              {/* Progress bar */}
-              <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all duration-1000 ease-out motion-reduce:transition-none ${statColor}`}
-                  style={{ width: isAnimated ? `${percentage}%` : '0%' }}
-                  role="progressbar"
-                  aria-valuenow={stat.base_stat}
-                  aria-valuemin={0}
-                  aria-valuemax={255}
-                  aria-label={`${formattedName} stat`}
-                />
-              </div>
+              {/* Ant Design Progress Bar */}
+              <Progress
+                percent={isAnimated ? percentage : 0}
+                strokeColor={statColor}
+                showInfo={false}
+                strokeLinecap="round"
+                trailColor="#e5e7eb"
+                size="small"
+              />
             </div>
           );
         })}

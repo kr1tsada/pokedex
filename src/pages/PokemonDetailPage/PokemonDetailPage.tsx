@@ -25,7 +25,7 @@ export const PokemonDetailPage: FC = () => {
     return (
       <Container className="py-16">
         <div className="flex flex-col items-center justify-center gap-4">
-          <Loading size="lg" />
+          <Loading size="large" />
           <p className="text-gray-600">Loading Pokemon data...</p>
         </div>
       </Container>
@@ -44,7 +44,7 @@ export const PokemonDetailPage: FC = () => {
           </p>
           <Button
             onClick={() => navigate('/')}
-            variant="outline"
+            variant="default"
             className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
           >
             Back to Home
@@ -61,7 +61,7 @@ export const PokemonDetailPage: FC = () => {
       <div className="mb-6">
         <Button
           onClick={() => navigate('/')}
-          variant="outline"
+          variant="default"
           className="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
           icon={<ArrowLeftIcon />}
         >
