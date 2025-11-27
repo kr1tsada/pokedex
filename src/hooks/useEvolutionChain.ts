@@ -13,6 +13,28 @@ export interface EvolutionStage {
   trigger?: string;
 }
 
+const getIdFromUrl = (url?: string) =>
+  url ? Number(url.split('/').filter(Boolean).pop()) : undefined;
+
+const buildStage = (link: ChainLink): EvolutionStage => {
+  const [detail] = link.evolution_details;
+  const id = getIdFromUrl(link.species.url);
+
+  if (!id) {
+    throw new Error('Invalid species url');
+  }
+
+  const stage: EvolutionStage = {
+    id,
+    name: link.species.name,
+  };
+
+  if (detail?.min_level) stage.minLevel = detail.min_level;
+  if (detail?.trigger?.name) stage.trigger = detail.trigger.name;
+
+  return stage;
+};
+
 /**
  * Parse evolution chain แบบ recursive
  * แปลง nested structure ให้เป็น flat array ของ evolution stages
@@ -21,40 +43,17 @@ const parseEvolutionChain = (chain: ChainLink): EvolutionStage[][] => {
   const stages: EvolutionStage[][] = [];
 
   const traverse = (link: ChainLink, currentPath: EvolutionStage[] = []) => {
-    // Extract Pokemon ID จาก species URL
-    // URL format: https://pokeapi.co/api/v2/pokemon-species/{id}/
-    const pokemonId = Number(link.species.url.split('/').filter(Boolean).pop());
-
-    // เพิ่ม current Pokemon ลง path
-    const currentStage: EvolutionStage = {
-      id: pokemonId,
-      name: link.species.name,
-    };
-
-    // ถ้ามี evolution details ให้เพิ่มข้อมูล
-    if (link.evolution_details.length > 0) {
-      const detail = link.evolution_details[0];
-      if (detail) {
-        if (detail.min_level) {
-          currentStage.minLevel = detail.min_level;
-        }
-        if (detail.trigger) {
-          currentStage.trigger = detail.trigger.name;
-        }
-      }
-    }
-
-    const newPath = [...currentPath, currentStage];
+    const nextPath = [...currentPath, buildStage(link)];
 
     // ถ้าไม่มี evolution ต่อ ให้บันทึก path นี้
     if (link.evolves_to.length === 0) {
-      stages.push(newPath);
+      stages.push(nextPath);
       return;
     }
 
     // Recursive สำหรับแต่ละ branch
     link.evolves_to.forEach((evolution) => {
-      traverse(evolution, newPath);
+      traverse(evolution, nextPath);
     });
   };
 
@@ -70,7 +69,7 @@ const parseEvolutionChain = (chain: ChainLink): EvolutionStage[][] => {
  */
 export const useEvolutionChain = (speciesUrl?: string) => {
   // Extract species ID จาก URL (e.g., https://pokeapi.co/api/v2/pokemon-species/2/ -> 2)
-  const speciesId = speciesUrl ? Number(speciesUrl.split('/').filter(Boolean).pop()) : undefined;
+  const speciesId = getIdFromUrl(speciesUrl);
 
   // First query: fetch species data เพื่อดึง evolution_chain.url
   const speciesQuery = useQuery({
@@ -87,9 +86,7 @@ export const useEvolutionChain = (speciesUrl?: string) => {
   });
 
   // Extract evolution chain ID จาก species.evolution_chain.url
-  const evolutionChainId = speciesQuery.data?.evolution_chain.url
-    ? Number(speciesQuery.data.evolution_chain.url.split('/').filter(Boolean).pop())
-    : undefined;
+  const evolutionChainId = getIdFromUrl(speciesQuery.data?.evolution_chain.url);
 
   // Second query: fetch evolution chain (dependent query - รอ speciesQuery สำเร็จก่อน)
   const evolutionQuery = useQuery<EvolutionStage[][]>({
