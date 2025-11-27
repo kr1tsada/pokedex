@@ -1,10 +1,11 @@
 import { type FC } from 'react';
 import { Container } from '@/components/layout';
-import { PokemonList } from '@/components/pokemon/PokemonList';
+import { PokemonListSwitch } from '@/components/pokemon/PokemonList';
 import { PokemonFilters } from '@/components/pokemon/PokemonFilters';
 import { PokemonViewToggle } from '@/components/pokemon/PokemonViewToggle';
-import { Pagination } from '@/components/common';
+import { Pagination, LoadModeToggle } from '@/components/common';
 import { usePagination } from '@/hooks';
+import { useLoadMode } from '@/contexts';
 import { MAX_POKEMON, ITEMS_PER_PAGE } from '@/utils/constants';
 
 /**
@@ -17,6 +18,9 @@ import { MAX_POKEMON, ITEMS_PER_PAGE } from '@/utils/constants';
  */
 export const Home: FC = () => {
   const { currentPage, totalPages, goToPage } = usePagination(MAX_POKEMON);
+  const { loadMode } = useLoadMode();
+
+  const isPaginationMode = loadMode === 'pagination';
 
   return (
     <Container className="py-8">
@@ -36,24 +40,33 @@ export const Home: FC = () => {
         </div>
       </div>
 
-      {/* Result Count / Page Info */}
-      <div className="mb-4 flex items-center justify-between text-sm text-gray-600">
-        <div>
-          Page <span className="font-semibold">{currentPage}</span> of{' '}
-          <span className="font-semibold">{totalPages}</span>
-        </div>
-        <div className="text-xs text-gray-500">Showing {ITEMS_PER_PAGE} Pokemon per page</div>
+      {/* Load Mode Toggle */}
+      <div className="mb-4">
+        <LoadModeToggle />
       </div>
+
+      {/* Result Count / Page Info (Pagination mode only) */}
+      {isPaginationMode && (
+        <div className="mb-4 flex items-center justify-between text-sm text-gray-600">
+          <div>
+            Page <span className="font-semibold">{currentPage}</span> of{' '}
+            <span className="font-semibold">{totalPages}</span>
+          </div>
+          <div className="text-xs text-gray-500">Showing {ITEMS_PER_PAGE} Pokemon per page</div>
+        </div>
+      )}
 
       {/* Pokemon List (Main Content) */}
       <div className="mb-8">
-        <PokemonList />
+        <PokemonListSwitch />
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center">
-        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={goToPage} />
-      </div>
+      {/* Pagination (Pagination mode only) */}
+      {isPaginationMode && (
+        <div className="flex justify-center">
+          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={goToPage} />
+        </div>
+      )}
     </Container>
   );
 };
