@@ -1,4 +1,5 @@
-import { type FC, useMemo, useState, useEffect } from 'react';
+/* eslint-disable react-hooks/purity */
+import { type FC, useMemo, useState, useEffect, useRef } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import { Empty, Progress, Alert } from 'antd';
 import clsx from 'clsx';
@@ -88,9 +89,12 @@ export const PokemonListLoadAll: FC = () => {
 
     // Search filter (ชื่อ Pokemon)
     if (debouncedSearch) {
-      result = result.filter((pokemon) =>
-        pokemon.name.toLowerCase().includes(debouncedSearch.toLowerCase())
-      );
+      const searchLower = debouncedSearch.toLowerCase();
+      result = result.filter((pokemon) => {
+        const nameMatch = pokemon.name.toLowerCase().includes(searchLower);
+        const idMatch = pokemon.id.toString().includes(debouncedSearch);
+        return nameMatch || idMatch;
+      });
     }
 
     // Type filter (อย่างน้อย 1 type ตรง)
@@ -129,9 +133,29 @@ export const PokemonListLoadAll: FC = () => {
   // Calculate total pages
   const totalPages = Math.ceil(filteredPokemon.length / ITEMS_PER_PAGE);
 
+  // Track previous filter values to detect changes
+  const prevFilterRef = useRef({
+    search: debouncedSearch,
+    types: filterState.selectedTypes,
+    sortBy: filterState.sortBy,
+  });
+
   // Reset to page 1 เมื่อ search/filter เปลี่ยน
   useEffect(() => {
-    setCurrentPage(1);
+    const prev = prevFilterRef.current;
+    const hasFilterChanged =
+      prev.search !== debouncedSearch ||
+      prev.types.join(',') !== filterState.selectedTypes.join(',') ||
+      prev.sortBy !== filterState.sortBy;
+
+    if (hasFilterChanged) {
+      setCurrentPage(1);
+      prevFilterRef.current = {
+        search: debouncedSearch,
+        types: filterState.selectedTypes,
+        sortBy: filterState.sortBy,
+      };
+    }
   }, [debouncedSearch, filterState.selectedTypes, filterState.sortBy]);
 
   // Calculate memory usage estimate
@@ -199,12 +223,16 @@ export const PokemonListLoadAll: FC = () => {
       }
       description={
         <div className="text-xs space-y-1">
-          <div>✅ Loaded: {successCount}/{MAX_POKEMON} Pokemon</div>
+          <div>
+            ✅ Loaded: {successCount}/{MAX_POKEMON} Pokemon
+          </div>
           <div>⚡ Load Time: {(loadDuration / 1000).toFixed(2)}s</div>
           <div>💾 Memory: ~{memoryUsageMB}MB</div>
           <div>🔍 Search Scope: ALL {successCount} Pokemon (not limited to page)</div>
           <div>📊 Filtered Results: {filteredPokemon.length} Pokemon</div>
-          <div>📄 Showing: {paginatedPokemon.length} Pokemon (Page {currentPage}/{totalPages})</div>
+          <div>
+            📄 Showing: {paginatedPokemon.length} Pokemon (Page {currentPage}/{totalPages})
+          </div>
         </div>
       }
       type="info"
