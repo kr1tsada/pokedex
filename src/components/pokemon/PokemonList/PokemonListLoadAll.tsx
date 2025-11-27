@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/purity */
-import { type FC, useMemo, useState, useEffect, useRef } from 'react';
+import { type FC, useEffect, useMemo, useState } from 'react';
 import { useQueries } from '@tanstack/react-query';
-import { Empty, Progress, Alert } from 'antd';
+import { Empty, Progress } from 'antd';
 import clsx from 'clsx';
 import { Loading, Pagination } from '@/components/common';
 import { PokemonCard } from '@/components/pokemon/PokemonCard';
@@ -10,7 +10,7 @@ import { useFilter, useView } from '@/contexts';
 import { fetchPokemonById } from '@/api/pokemon.api';
 import { MAX_POKEMON, ITEMS_PER_PAGE } from '@/utils/constants';
 import type { Pokemon } from '@/api/types/pokemon.types';
-import { ExclamationCircleOutlined, ThunderboltOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { QUERY_GC_TIMES, QUERY_STALE_TIMES } from '@/lib/queryTimes';
 
 /**
@@ -21,12 +21,6 @@ import { QUERY_GC_TIMES, QUERY_STALE_TIMES } from '@/lib/queryTimes';
  * 2. Client-side filtering จากข้อมูลทั้งหมด (ไม่จำกัดแค่หน้าปัจจุบัน)
  * 3. Client-side sorting
  * 4. Client-side pagination (แสดงทีละ 20 ตัวต่อหน้า)
- * 5. แสดง performance metrics
- *
- * ข้อดี:
- * - Search/Filter ได้ทั้งหมด (1010 Pokemon)
- * - Instant filtering (ไม่ต้องรอ API)
- * - Render เฉพาะ 20 Pokemon ต่อหน้า (ดีกว่าเดิมที่แสดงหมด)
  *
  * ข้อเสีย:
  * - Initial load ช้ากว่า (~3-5 วินาที)
@@ -40,10 +34,24 @@ export const PokemonListLoadAll: FC = () => {
   // Performance metrics
   const [loadStartTime] = useState(Date.now());
   const [loadEndTime, setLoadEndTime] = useState<number | null>(null);
-  const [loadDuration, setLoadDuration] = useState<number | null>(null);
 
-  // Client-side pagination state
-  const [currentPage, setCurrentPage] = useState(1);
+  const filterSignature = useMemo(
+    () =>
+      [
+        debouncedSearch.toLowerCase(),
+        [...filterState.selectedTypes].sort().join(','),
+        filterState.sortBy,
+      ].join('|'),
+    [debouncedSearch, filterState.selectedTypes, filterState.sortBy]
+  );
+
+  // Client-side pagination state keyed by current filters
+  const [paginationState, setPaginationState] = useState(() => ({
+    signature: filterSignature,
+    page: 1,
+  }));
+
+  const currentPage = paginationState.signature === filterSignature ? paginationState.page : 1;
 
   // Generate array of ALL Pokemon IDs (1-1010)
   const allPokemonIds = useMemo(() => {
@@ -72,7 +80,6 @@ export const PokemonListLoadAll: FC = () => {
     if (!isLoading && loadEndTime === null) {
       const endTime = Date.now();
       setLoadEndTime(endTime);
-      setLoadDuration(endTime - loadStartTime);
     }
   }, [isLoading, loadEndTime, loadStartTime]);
 
@@ -133,38 +140,11 @@ export const PokemonListLoadAll: FC = () => {
   // Calculate total pages
   const totalPages = Math.ceil(filteredPokemon.length / ITEMS_PER_PAGE);
 
-  // Track previous filter values to detect changes
-  const prevFilterRef = useRef({
-    search: debouncedSearch,
-    types: filterState.selectedTypes,
-    sortBy: filterState.sortBy,
-  });
-
-  // Reset to page 1 เมื่อ search/filter เปลี่ยน
-  useEffect(() => {
-    const prev = prevFilterRef.current;
-    const hasFilterChanged =
-      prev.search !== debouncedSearch ||
-      prev.types.join(',') !== filterState.selectedTypes.join(',') ||
-      prev.sortBy !== filterState.sortBy;
-
-    if (hasFilterChanged) {
-      setCurrentPage(1);
-      prevFilterRef.current = {
-        search: debouncedSearch,
-        types: filterState.selectedTypes,
-        sortBy: filterState.sortBy,
-      };
-    }
-  }, [debouncedSearch, filterState.selectedTypes, filterState.sortBy]);
-
-  // Calculate memory usage estimate
-  const memoryUsageMB = useMemo(() => {
-    if (allPokemon.length === 0) return 0;
-    const sampleSize = JSON.stringify(allPokemon[0]).length;
-    const totalBytes = sampleSize * allPokemon.length;
-    return (totalBytes / (1024 * 1024)).toFixed(2);
-  }, [allPokemon]);
+  // Handle page change with scroll to top
+  const handlePageChange = (page: number) => {
+    setPaginationState({ signature: filterSignature, page });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Loading state with progress
   if (isLoading) {
@@ -206,61 +186,22 @@ export const PokemonListLoadAll: FC = () => {
     );
   }
 
-  // Handle page change with scroll to top
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Performance metrics banner
-  const performanceMetrics = loadDuration && (
-    <Alert
-      message={
-        <div className="flex items-center gap-2">
-          <ThunderboltOutlined />
-          <span className="font-semibold">Load All Mode Active (Client-Side Pagination)</span>
-        </div>
-      }
-      description={
-        <div className="text-xs space-y-1">
-          <div>
-            ✅ Loaded: {successCount}/{MAX_POKEMON} Pokemon
-          </div>
-          <div>⚡ Load Time: {(loadDuration / 1000).toFixed(2)}s</div>
-          <div>💾 Memory: ~{memoryUsageMB}MB</div>
-          <div>🔍 Search Scope: ALL {successCount} Pokemon (not limited to page)</div>
-          <div>📊 Filtered Results: {filteredPokemon.length} Pokemon</div>
-          <div>
-            📄 Showing: {paginatedPokemon.length} Pokemon (Page {currentPage}/{totalPages})
-          </div>
-        </div>
-      }
-      type="info"
-      showIcon
-      className="mb-4"
-    />
-  );
-
   // Empty state (ไม่มีผลลัพธ์หลัง filter)
   if (filteredPokemon.length === 0) {
     return (
-      <>
-        {performanceMetrics}
-        <div className="text-center py-12">
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Pokemon found">
-            <p className="text-sm text-gray-400 mt-2">
-              Searched all {successCount} Pokemon - try different filters
-            </p>
-          </Empty>
-        </div>
-      </>
+      <div className="text-center py-12">
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Pokemon found">
+          <p className="text-sm text-gray-400 mt-2">
+            Searched all {successCount} Pokemon - try different filters
+          </p>
+        </Empty>
+      </div>
     );
   }
 
   // Render grid or list layout with pagination
   return (
     <>
-      {performanceMetrics}
       <div
         className={clsx(
           'transition-all duration-200',

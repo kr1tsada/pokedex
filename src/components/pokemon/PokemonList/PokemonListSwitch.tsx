@@ -1,6 +1,4 @@
 import { type FC } from 'react';
-import { useLoadMode } from '@/contexts';
-import { PokemonList } from './PokemonList';
 import { PokemonListLoadAll } from './PokemonListLoadAll';
 
 /**
@@ -12,12 +10,4 @@ import { PokemonListLoadAll } from './PokemonListLoadAll';
  *
  * ใช้สำหรับเปรียบเทียบ performance และ UX
  */
-export const PokemonListSwitch: FC = () => {
-  const { loadMode } = useLoadMode();
-
-  if (loadMode === 'loadAll') {
-    return <PokemonListLoadAll />;
-  }
-
-  return <PokemonList />;
-};
+export const PokemonListSwitch: FC = () => <PokemonListLoadAll />;

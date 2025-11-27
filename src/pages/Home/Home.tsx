@@ -3,10 +3,6 @@ import { Container } from '@/components/layout';
 import { PokemonListSwitch } from '@/components/pokemon/PokemonList';
 import { PokemonFilters } from '@/components/pokemon/PokemonFilters';
 import { PokemonViewToggle } from '@/components/pokemon/PokemonViewToggle';
-import { Pagination, LoadModeToggle } from '@/components/common';
-import { usePagination } from '@/hooks';
-import { useLoadMode } from '@/contexts';
-import { MAX_POKEMON, ITEMS_PER_PAGE } from '@/utils/constants';
 
 /**
  * Home Page Component
@@ -17,11 +13,6 @@ import { MAX_POKEMON, ITEMS_PER_PAGE } from '@/utils/constants';
  * - Pagination
  */
 export const Home: FC = () => {
-  const { currentPage, totalPages, goToPage } = usePagination(MAX_POKEMON);
-  const { loadMode } = useLoadMode();
-
-  const isPaginationMode = loadMode === 'pagination';
-
   return (
     <Container className="py-8">
       {/* Header Section: Filters & View Toggle */}
@@ -40,33 +31,10 @@ export const Home: FC = () => {
         </div>
       </div>
 
-      {/* Load Mode Toggle */}
-      <div className="mb-4">
-        <LoadModeToggle />
-      </div>
-
-      {/* Result Count / Page Info (Pagination mode only) */}
-      {isPaginationMode && (
-        <div className="mb-4 flex items-center justify-between text-sm text-gray-600">
-          <div>
-            Page <span className="font-semibold">{currentPage}</span> of{' '}
-            <span className="font-semibold">{totalPages}</span>
-          </div>
-          <div className="text-xs text-gray-500">Showing {ITEMS_PER_PAGE} Pokemon per page</div>
-        </div>
-      )}
-
       {/* Pokemon List (Main Content) */}
       <div className="mb-8">
         <PokemonListSwitch />
       </div>
-
-      {/* Pagination (Pagination mode only) */}
-      {isPaginationMode && (
-        <div className="flex justify-center">
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={goToPage} />
-        </div>
-      )}
     </Container>
   );
 };
