@@ -71,11 +71,14 @@ export const PokemonList: FC = () => {
   const filteredPokemon = useMemo(() => {
     let result = [...pokemonList];
 
-    // Search filter (ชื่อ Pokemon)
+    // Search filter (ชื่อ Pokemon or ID)
     if (debouncedSearch) {
-      result = result.filter((pokemon) =>
-        pokemon.name.toLowerCase().includes(debouncedSearch.toLowerCase())
-      );
+      const searchLower = debouncedSearch.toLowerCase();
+      result = result.filter((pokemon) => {
+        const nameMatch = pokemon.name.toLowerCase().includes(searchLower);
+        const idMatch = pokemon.id.toString().includes(debouncedSearch);
+        return nameMatch || idMatch;
+      });
     }
 
     // Type filter (อย่างน้อย 1 type ตรง)
